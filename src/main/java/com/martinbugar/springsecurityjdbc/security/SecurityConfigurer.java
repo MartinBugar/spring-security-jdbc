@@ -1,11 +1,14 @@
 package com.martinbugar.springsecurityjdbc.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -20,10 +23,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .withDefaultSchema()
-                .withUser(
+        auth.jdbcAuthentication() // vytvori jdbc prepojenie
+                .dataSource(dataSource) // pripoji ho na H2 databa
+                .withDefaultSchema() // vztvori schemu v H2 databaze
+                .withUser( // vytvori uzivatela v databaze
                         User.withUsername("user")
                         .password("pass")
                         .roles("USER")
@@ -32,7 +35,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                         User.withUsername("admin")
                                 .password("pass")
                                 .roles("ADMIN")
-                )
+                );
 
     }
 
@@ -43,5 +46,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user").hasAnyRole("ADMIN","USER")
                 .antMatchers("/").permitAll()
                 .and().formLogin();
+    }
+
+    @Bean
+    public PasswordEncoder gePasswordEncoder (){
+        return NoOpPasswordEncoder.getInstance();
     }
 }

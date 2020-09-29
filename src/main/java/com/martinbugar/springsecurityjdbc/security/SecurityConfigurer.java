@@ -24,19 +24,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication() // vytvori jdbc prepojenie
-                .dataSource(dataSource) // pripoji ho na H2 databa
-                .withDefaultSchema() // vztvori schemu v H2 databaze
-                .withUser( // vytvori uzivatela v databaze
-                        User.withUsername("user")
-                        .password("pass")
-                        .roles("USER")
-                )
-                .withUser(
-                        User.withUsername("admin")
-                                .password("pass")
-                                .roles("ADMIN")
-                );
-
+                .dataSource(dataSource); // pripoji ho na H2 databa
     }
 
     @Override
